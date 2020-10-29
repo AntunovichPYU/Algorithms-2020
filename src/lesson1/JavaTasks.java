@@ -1,7 +1,6 @@
 package lesson1;
 
 import kotlin.NotImplementedError;
-import kotlin.Pair;
 
 import java.io.*;
 import java.util.*;

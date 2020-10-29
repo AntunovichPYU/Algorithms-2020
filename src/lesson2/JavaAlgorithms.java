@@ -3,6 +3,8 @@ package lesson2;
 import kotlin.NotImplementedError;
 import kotlin.Pair;
 
+import java.util.Arrays;
+
 @SuppressWarnings("unused")
 public class JavaAlgorithms {
     /**
@@ -97,8 +99,35 @@ public class JavaAlgorithms {
      * Если имеется несколько самых длинных общих подстрок одной длины,
      * вернуть ту из них, которая встречается раньше в строке first.
      */
+    // Сложность: O(n*m), где m и n - длины строк
+    // Ресурсоемкость: O(n*m)
+
     static public String longestCommonSubstring(String firs, String second) {
-        throw new NotImplementedError();
+        int[][] table = new int[firs.length() + 1][second.length() + 1];
+
+        int maxNum = 0;
+        int maxI = 0;
+        for (int i = 0; i <= firs.length(); i++) {
+            for (int j = 0; j <= second.length(); j++) {
+                if (i == 0 || j == 0) {
+                    table[i][j] = 0;
+                } else {
+                    if (firs.charAt(i - 1) == second.charAt(j - 1)) {
+                        table[i][j] = table[i - 1][j - 1] + 1;
+                        if (table[i][j] > maxNum){
+                            maxNum = table[i][j];
+                            maxI = i;
+                        }
+                    } else {
+                        table[i][j] = 0;
+                    }
+                }
+            }
+        }
+
+        return (maxNum != 0)
+                ? firs.substring(maxI - maxNum, maxI)
+                : "";
     }
 
     /**
@@ -111,7 +140,28 @@ public class JavaAlgorithms {
      * Справка: простым считается число, которое делится нацело только на 1 и на себя.
      * Единица простым числом не считается.
      */
+    //Сложность: O(n*log(log(n)))
+    //Ресурсоемкость: O(n)
+
     static public int calcPrimesNumber(int limit) {
-        throw new NotImplementedError();
+        if (limit <= 1)
+            return 0;
+        boolean[] isPrime = new boolean[limit + 1];
+        Arrays.fill(isPrime, true);
+        isPrime[1] = false;
+        int count = 0;
+        for (int i = 2; i * i <= limit; i++) {
+            if (isPrime[i]) {
+                for (int j = i * i; j <= limit; j += i) {
+                    isPrime[j] = false;
+                }
+            }
+        }
+
+        for (int i = 2; i <= limit; i++) {
+            if (isPrime[i])
+                count++;
+        }
+        return count;
     }
 }
