@@ -1,6 +1,10 @@
 package lesson1;
 
 import kotlin.NotImplementedError;
+import kotlin.Pair;
+
+import java.io.*;
+import java.util.*;
 
 @SuppressWarnings("unused")
 public class JavaTasks {
@@ -98,8 +102,36 @@ public class JavaTasks {
      * 99.5
      * 121.3
      */
+    //Сложность: O(n);
+    //Ресурсоемкость: O(n)
+
     static public void sortTemperatures(String inputName, String outputName) {
-        throw new NotImplementedError();
+        int minTemp = -2730;
+        int maxTemp = 5000;
+        int range = maxTemp - minTemp;
+
+        List<Integer> tempList = new ArrayList<>();
+        String line;
+        try (
+                BufferedReader reader = new BufferedReader(new FileReader(inputName));
+                BufferedWriter writer = new BufferedWriter(new FileWriter(outputName))
+        ) {
+            while ((line = reader.readLine()) != null) {
+                double temp = Double.parseDouble(line) * 10.0;
+                if (temp > maxTemp || temp < minTemp)
+                    throw new IllegalArgumentException();
+                tempList.add((int) temp - minTemp);
+            }
+
+            int[] sortedArray = tempList.stream().mapToInt(e -> e).toArray();
+            sortedArray = Sorts.countingSort(sortedArray, range);
+            for (int e: sortedArray) {
+                double num = (e + minTemp) / 10.0;
+                writer.write(num + "\n");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -131,8 +163,44 @@ public class JavaTasks {
      * 2
      * 2
      */
+    // Сложность: O(n)
+    // Ресурсоемкость: O(n)
+
     static public void sortSequence(String inputName, String outputName) {
-        throw new NotImplementedError();
+        List<Integer> listOfNum = new ArrayList<>();
+        Map<Integer, Integer> numToAmount = new HashMap<>();
+        String line;
+        try (BufferedReader reader = new BufferedReader(new FileReader(inputName))) {
+            while ((line = reader.readLine()) != null) {
+                int num = Integer.parseInt(line);
+                listOfNum.add(num);
+                if (!numToAmount.containsKey(num))
+                    numToAmount.put(num, 1);
+                else
+                    numToAmount.put(num, numToAmount.get(num) + 1);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        int frequentMinNum = -1;
+        int maxCount = Collections.max(numToAmount.values());
+        for (int e: numToAmount.keySet()) {
+            if (numToAmount.get(e) == maxCount && (e < frequentMinNum || frequentMinNum == -1))
+                frequentMinNum = e;
+        }
+
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(outputName))) {
+            for (int e: listOfNum) {
+                if (e != frequentMinNum)
+                    writer.write(e + "\n");
+            }
+            for (int i= 0; i < maxCount; i++) {
+                writer.write(frequentMinNum + "\n");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
