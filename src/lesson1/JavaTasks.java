@@ -103,8 +103,7 @@ public class JavaTasks {
      */
     //Сложность: O(n);
     //Ресурсоемкость: O(n)
-
-    static public void sortTemperatures(String inputName, String outputName) {
+    static public void sortTemperatures(String inputName, String outputName) throws IOException {
         int minTemp = -2730;
         int maxTemp = 5000;
         int range = maxTemp - minTemp;
@@ -129,7 +128,7 @@ public class JavaTasks {
                 writer.write(num + "\n");
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new IOException();
         }
     }
 
@@ -164,8 +163,7 @@ public class JavaTasks {
      */
     // Сложность: O(n)
     // Ресурсоемкость: O(n)
-
-    static public void sortSequence(String inputName, String outputName) {
+    static public void sortSequence(String inputName, String outputName) throws IOException {
         List<Integer> listOfNum = new ArrayList<>();
         Map<Integer, Integer> numToAmount = new HashMap<>();
         String line;
@@ -179,7 +177,7 @@ public class JavaTasks {
                     numToAmount.put(num, numToAmount.get(num) + 1);
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new IOException();
         }
 
         int frequentMinNum = -1;
@@ -198,7 +196,7 @@ public class JavaTasks {
                 writer.write(frequentMinNum + "\n");
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new IOException();
         }
     }
 
