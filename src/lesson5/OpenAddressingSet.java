@@ -1,6 +1,5 @@
 package lesson5;
 
-import kotlin.NotImplementedError;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.AbstractSet;
@@ -8,6 +7,8 @@ import java.util.Iterator;
 import java.util.Set;
 
 public class OpenAddressingSet<T> extends AbstractSet<T> {
+
+    private final Object DEL = new Object();
 
     private final int bits;
 
@@ -67,7 +68,7 @@ public class OpenAddressingSet<T> extends AbstractSet<T> {
         int startingIndex = startingIndex(t);
         int index = startingIndex;
         Object current = storage[index];
-        while (current != null) {
+        while (current != null && current != DEL) {
             if (current.equals(t)) {
                 return false;
             }
@@ -95,7 +96,20 @@ public class OpenAddressingSet<T> extends AbstractSet<T> {
      */
     @Override
     public boolean remove(Object o) {
-        return super.remove(o);
+        int startingIndex = startingIndex(o);
+        int index = startingIndex;
+        Object current = storage[index];
+
+        while (!current.equals(o)) {
+            index = (index + 1) % capacity;
+            current = storage[index];
+            if (current == null || index == startingIndex)
+                return false;
+        }
+
+        storage[index] = DEL;
+        size--;
+        return true;
     }
 
     /**
@@ -111,7 +125,43 @@ public class OpenAddressingSet<T> extends AbstractSet<T> {
     @NotNull
     @Override
     public Iterator<T> iterator() {
-        // TODO
-        throw new NotImplementedError();
+        return new OASIterator();
+    }
+
+    public class OASIterator implements Iterator<T> {
+        int elementsCount = 0;
+        int index = 0;
+        Object current;
+
+        @Override
+        public boolean hasNext() {
+            return elementsCount < size;
+        }
+
+        @Override
+        public T next() {
+            if (!hasNext())
+                throw new IllegalStateException();
+
+            current = null;
+            while (current == null || current == DEL) {
+                current = storage[index];
+                index++;
+            }
+
+            elementsCount++;
+            return (T) current;
+        }
+
+        @Override
+        public void remove() {
+            if (current == null)
+                throw new IllegalStateException();
+
+            storage[index - 1] = DEL;
+            size--;
+            elementsCount--;
+            current = null;
+        }
     }
 }

@@ -76,6 +76,36 @@ abstract class AbstractOpenAddressingSetTest {
                 )
             }
         }
+
+        val openAddressingSet = create<String>(4)
+        val firstString = "fasfa"
+        val secondString = "jfij3ji"
+        openAddressingSet.addAll(arrayOf("sfasdf", "asdfasdfa", "fasfa", "6fdsf", "jfij3ji"))
+        val expectedSize = openAddressingSet.size - 1
+        assertTrue(
+            openAddressingSet.remove(secondString),
+            "An element wasn't removed contrary to expected."
+        )
+        assertFalse(
+            secondString in openAddressingSet,
+            "A supposedly removed element is still in the set."
+        )
+        assertTrue(
+            firstString in openAddressingSet,
+            "The removal of the element prevented access to the other elements."
+        )
+        assertEquals(
+            expectedSize, openAddressingSet.size,
+            "The size of the set is not as expected."
+        )
+        assertFalse(
+            openAddressingSet.remove(secondString),
+            "A removed element was supposedly removed twice."
+        )
+        assertEquals(
+            expectedSize, openAddressingSet.size,
+            "The size of the set is not as expected."
+        )
     }
 
     protected fun doIteratorTest() {
@@ -175,5 +205,49 @@ abstract class AbstractOpenAddressingSetTest {
             }
             println("All clear!")
         }
+
+        val controlSet = mutableSetOf<String>()
+        controlSet.addAll(arrayOf("dfsfas", "bistaffing", "lmao", "ayaya", "fsdfa", "sevennationarmy", "omg"))
+        val toRemove = "omg"
+        val openAddressingSet = create<String>(5)
+        for (element in controlSet) {
+            openAddressingSet += element
+        }
+        controlSet.remove(toRemove)
+        println("Control set: $controlSet")
+        println("Removing element \"$toRemove\" from open addressing set through the iterator...")
+        val iterator = openAddressingSet.iterator()
+        assertFailsWith<IllegalStateException>("Something was supposedly deleted before the iteration started") {
+            iterator.remove()
+        }
+        var counter = openAddressingSet.size
+        while (iterator.hasNext()) {
+            val element = iterator.next()
+            counter--
+            if (element == toRemove) {
+                iterator.remove()
+            }
+        }
+        assertEquals(
+            0, counter,
+            "OpenAddressingSetIterator.remove() changed iterator position: ${abs(counter)} elements were ${if (counter > 0) "skipped" else "revisited"}."
+        )
+        assertEquals(
+            controlSet.size, openAddressingSet.size,
+            "The size of the set is incorrect: was ${openAddressingSet.size}, should've been ${controlSet.size}."
+        )
+        for (element in controlSet) {
+            assertTrue(
+                openAddressingSet.contains(element),
+                "Open addressing set doesn't have the element $element from the control set."
+            )
+        }
+        for (element in openAddressingSet) {
+            assertTrue(
+                controlSet.contains(element),
+                "Open addressing set has the element $element that is not in control set."
+            )
+        }
+        println("All clear!")
     }
 }
