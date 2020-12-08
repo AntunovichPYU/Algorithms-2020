@@ -2,7 +2,14 @@ package lesson7;
 
 import kotlin.NotImplementedError;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+
+import static java.lang.Integer.max;
+import static java.lang.Integer.min;
 
 @SuppressWarnings("unused")
 public class JavaDynamicTasks {
@@ -18,8 +25,40 @@ public class JavaDynamicTasks {
      * Если есть несколько самых длинных общих подпоследовательностей, вернуть любую из них.
      * При сравнении подстрок, регистр символов *имеет* значение.
      */
+    //Сложность: O(nm), n и m - длины строк
+    //Ресурсоемкость: O(nm)
     public static String longestCommonSubSequence(String first, String second) {
-        throw new NotImplementedError();
+        int firstLength = first.length();
+        int secondLength = second.length();
+        int[][] table = new int[firstLength + 1][secondLength + 1];
+
+        for (int i = 0; i < firstLength; i++) {
+            for (int j = 0; j < secondLength; j++) {
+                if (i == 0 || j == 0)
+                    table[i][j] = 0;
+                else if (first.charAt(i - 1) == second.charAt(j - 1))
+                    table[i][j] = table[i - 1][j - 1] + 1;
+                else
+                    table[i][j] = max(table[i - 1][j], table[i][j - 1]);
+            }
+        }
+
+        StringBuilder result = new StringBuilder();
+        int i = firstLength;
+        int j = secondLength;
+        while (i > 0 && j > 0) {
+            if (first.charAt(i - 1) == second.charAt(j - 1)) {
+                result.append(first.charAt(i - 1));
+                i--;
+                j--;
+            } else if (table[i - 1][j] > table[i][j - 1]) {
+                i--;
+            } else {
+                j--;
+            }
+        }
+
+        return result.reverse().toString();
     }
 
     /**
@@ -58,8 +97,52 @@ public class JavaDynamicTasks {
      *
      * Здесь ответ 2 + 3 + 4 + 1 + 2 = 12
      */
-    public static int shortestPathOnField(String inputName) {
-        throw new NotImplementedError();
+    //Сложность: O(n*m), где n*m - размер поля
+    //Ресурсоемкость: O(n*m)
+    public static int shortestPathOnField(String inputName) throws IOException {
+        BufferedReader reader = new BufferedReader(new FileReader(inputName));
+        String line;
+        List<String[]> input = new ArrayList<>();
+        int height = 0;
+        int width = 0;
+        while ((line = reader.readLine()) != null) {
+            String[] toAdd = line.split(" ");
+            input.add(toAdd);
+            height++;
+            if (width == 0)
+                width = toAdd.length;
+        }
+        reader.close();
+
+        int[][] table = new int[height][width];
+        for (int i = 0; i < height; i++) {
+            String[] el = input.get(i);
+            for (int j = 0; j < width; j++) {
+                table[i][j] = Integer.parseInt(el[j]);
+            }
+        }
+
+        int[][] minLengths = new int[height][width];
+        for (int i = 0; i < height; i++) {
+            for (int j = 0; j < width; j++) {
+                if (i == 0 && j == 0)
+                    minLengths[i][j] = table[i][j];
+                else if (i == 0)
+                    minLengths[i][j] = minLengths[i][j - 1] + table[i][j];
+                else if (j == 0)
+                    minLengths[i][j] = minLengths[i - 1][j] + table[i][j];
+                else
+                    minLengths[i][j] = Integer.min(
+                            minLengths[i][j - 1] + table[i][j],
+                            min(
+                                    minLengths[i - 1][j] + table[i][j],
+                                    minLengths[i - 1][j - 1] + table[i][j]
+                            )
+                    );
+            }
+        }
+
+        return minLengths[height - 1][width - 1];
     }
 
     // Задачу "Максимальное независимое множество вершин в графе без циклов"

@@ -94,6 +94,8 @@ public class OpenAddressingSet<T> extends AbstractSet<T> {
      *
      * Средняя
      */
+    //Сложность: O(n)
+    //Ресурсоемкость: O(1)
     @Override
     public boolean remove(Object o) {
         int startingIndex = startingIndex(o);
@@ -133,11 +135,15 @@ public class OpenAddressingSet<T> extends AbstractSet<T> {
         int index = 0;
         Object current;
 
+        //Сложность: O(1)
+        //Ресурсоемкость: O(1)
         @Override
         public boolean hasNext() {
             return elementsCount < size;
         }
 
+        //Сложность: O(n)
+        //Ресурсоемкость: O(1)
         @Override
         public T next() {
             if (!hasNext())
@@ -153,6 +159,8 @@ public class OpenAddressingSet<T> extends AbstractSet<T> {
             return (T) current;
         }
 
+        //Сложность: O(1)
+        //Ресурсоемкость: O(1)
         @Override
         public void remove() {
             if (current == null)
